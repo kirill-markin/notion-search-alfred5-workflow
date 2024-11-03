@@ -258,7 +258,15 @@ if not (alfredQuery and alfredQuery.strip()):
 
             # Extract search results from notion recent page visits response
             searchResults = Payload(data)
-            for x in searchResults.pages:
+            # To support older versions of the payload
+            if hasattr(searchResults, 'pages') and isinstance(searchResults.pages, list):
+                results = searchResults.pages
+            elif hasattr(searchResults, 'results') and isinstance(searchResults.results, list):
+                results = searchResults.results
+            else:
+                results = []
+
+            for x in results:
                 searchResultObject = SearchResult(x.get('id'))
                 searchResultObject.title = x.get('name')
                 searchResultObject.subtitle = createSubtitleChain(searchResults.recordMap, searchResultObject.id)
